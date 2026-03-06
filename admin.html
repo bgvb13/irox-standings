@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,91 +8,98 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0a; color: #ccc; font-family: 'Barlow Condensed','Arial Narrow',Arial,sans-serif; min-height: 100vh; }
-    #header { border-bottom: 1px solid #1a1a1a; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    #title { display: flex; align-items: baseline; gap: 10px; }
-    #title .icon { color: #e8ff47; font-size: 20px; font-weight: 900; }
-    #title .name { color: #fff; font-size: 16px; font-weight: 800; letter-spacing: 0.05em; }
-    #title .sub { color: #ff6b35; font-size: 12px; letter-spacing: 0.12em; }
-    #header-right { display: flex; gap: 8px; align-items: center; }
-    #save-status { font-size: 10px; color: #444; letter-spacing: 0.08em; transition: color 0.3s; }
-    #save-status.saving { color: #e8ff47; }
-    #save-status.saved { color: #4caf50; }
-    #save-status.error { color: #f44336; }
-    .hbtn { background: transparent; border: 1px solid #2a2a2a; color: #666; border-radius: 4px; padding: 4px 10px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s; }
-    .hbtn:hover { border-color: #444; color: #999; }
-    .hbtn.primary { background: #e8ff47; border-color: #e8ff47; color: #0a0a0a; }
-    .hbtn.primary:hover { background: #d4e832; }
-    #series-tabs { display: flex; gap: 4px; padding: 10px 28px; background: #060606; border-bottom: 1px solid #1a1a1a; }
-    .series-btn { background: transparent; color: #444; border: 1px solid #1a1a1a; border-radius: 4px; padding: 5px 18px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-    .series-btn.peak.active { background: #e8ff47; color: #0a0a0a; border-color: #e8ff47; }
-    .series-btn.heat.active { background: #ff6b35; color: #fff; border-color: #ff6b35; }
-    #race-tabs { border-bottom: 1px solid #141414; padding: 8px 28px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #080808; min-height: 44px; }
-    .race-tag { background: #1a1a1a; color: #888; border: 2px solid #2a2a2a; border-radius: 4px; padding: 4px 10px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
-    .race-tag.active { background: #e8ff47; color: #0a0a0a; border-color: #e8ff47; }
-    .race-tag .stg-badge { font-size: 9px; border-radius: 2px; padding: 1px 4px; background: #e8ff4722; color: #e8ff47; }
-    .race-tag.active .stg-badge { background: #0a0a0a22; color: #0a0a0a; }
-    .race-tag .remove { opacity: 0.5; font-weight: 400; font-size: 14px; line-height: 1; }
-    .import-label { display: flex; align-items: center; gap: 6px; border: 2px dashed #2a2a2a; border-radius: 4px; padding: 4px 12px; cursor: pointer; color: #444; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; transition: all 0.15s; }
-    .import-label:hover, .import-label.drag { border-color: #e8ff47; color: #e8ff47; }
-    #view-tabs { display: flex; gap: 4px; padding: 8px 28px; background: #080808; border-bottom: 1px solid #141414; }
-    .view-btn { background: transparent; color: #555; border: none; padding: 4px 12px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 3px; transition: all 0.15s; }
-    .view-btn.active { background: #222; color: #ccc; }
-    #content { padding: 24px 28px; }
-    .section-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-    .section-title { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 0.06em; }
-    .section-sub { font-size: 12px; color: #444; margin-left: 12px; }
-    .empty-msg { color: #333; font-size: 14px; text-align: center; padding-top: 60px; }
-    .tbl-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 8px 14px; color: #444; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 2px solid #1e1e1e; background: #0d0d0d; text-align: left; white-space: nowrap; }
-    th.r { text-align: right; }
-    td { padding: 10px 14px; font-size: 13px; color: #ccc; border-bottom: 1px solid #141414; white-space: nowrap; text-align: left; }
-    td.r { text-align: right; }
-    td.dim { color: #555; }
-    td.accent { color: #e8ff47; font-weight: 700; }
-    td.dash { color: #2a2a2a; }
-    .pos-badge { display: inline-block; width: 24px; text-align: center; font-weight: 900; }
-    .pos-1 { color: #e8ff47; font-size: 15px; }
-    .pos-2 { color: #aaa; font-size: 15px; }
-    .pos-3 { color: #c8935a; font-size: 15px; }
-    .pos-n { color: #444; font-size: 12px; }
-    tr:nth-child(odd) { background: #0c0c0c; }
-    tr:nth-child(even) { background: #0a0a0a; }
-    .stage-btn { background: transparent; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; border-radius: 4px; padding: 4px 10px; transition: all 0.15s; border: 1px solid #2a2a2a; color: #666; }
-    .stage-btn.has-data { border-color: #e8ff4755; color: #e8ff47aa; }
-    /* Modals */
-    .overlay { display: none; position: fixed; inset: 0; background: #000000cc; z-index: 100; align-items: center; justify-content: center; }
-    .overlay.open { display: flex; }
-    .modal { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 28px 32px; width: 440px; max-height: 90vh; overflow-y: auto; }
-    .modal-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
-    .modal-title span { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.08em; }
-    .modal-title button { background: none; border: none; color: #555; font-size: 20px; cursor: pointer; }
-    .modal-sub { font-size: 11px; color: #444; letter-spacing: 0.1em; margin-bottom: 16px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
-    .modal-save { flex: 1; background: #e8ff47; color: #0a0a0a; border: none; border-radius: 4px; padding: 10px; font-family: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; cursor: pointer; }
-    .modal-cancel { background: transparent; color: #555; border: 1px solid #2a2a2a; border-radius: 4px; padding: 10px 16px; font-family: inherit; font-size: 12px; cursor: pointer; }
-    .stage-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .stage-pos { width: 28px; text-align: right; font-size: 13px; font-weight: 700; color: #444; flex-shrink: 0; }
-    .stage-pos.p1 { color: #e8ff47; }
-    .stage-pts-lbl { font-size: 11px; color: #e8ff4788; width: 24px; flex-shrink: 0; }
-    .stage-row select { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; color: #ccc; border-radius: 4px; padding: 6px 10px; font-family: inherit; font-size: 12px; cursor: pointer; }
-    /* Series selector in import modal */
-    .series-select { display: flex; gap: 8px; margin-bottom: 16px; }
-    .series-opt { flex: 1; background: #1a1a1a; border: 2px solid #2a2a2a; color: #666; border-radius: 4px; padding: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; text-align: center; transition: all 0.15s; }
-    .series-opt.selected.peak { background: #e8ff4722; border-color: #e8ff47; color: #e8ff47; }
-    .series-opt.selected.heat { background: #ff6b3522; border-color: #ff6b35; color: #ff6b35; }
-    input[type=text] { width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; color: #ccc; border-radius: 4px; padding: 8px 12px; font-family: inherit; font-size: 13px; }
+
+```
+/* HEADER */
+#header { border-bottom: 1px solid #1a1a1a; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+#title { color: #fff; font-size: 18px; font-weight: 800; letter-spacing: 0.06em; }
+#title span { color: #F46B55; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; margin-left: 12px; }
+#header-right { display: flex; gap: 8px; align-items: center; }
+#save-status { font-size: 10px; color: #444; letter-spacing: 0.08em; transition: color 0.3s; }
+#save-status.saving { color: #e8ff47; }
+#save-status.saved { color: #4caf50; }
+#save-status.error { color: #f44336; }
+.hbtn { background: transparent; border: 1px solid #2a2a2a; color: #666; border-radius: 4px; padding: 4px 10px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s; }
+.hbtn:hover { border-color: #444; color: #999; }
+.hbtn.primary { background: #e8ff47; border-color: #e8ff47; color: #0a0a0a; }
+.hbtn.primary:hover { background: #d4e832; }
+
+/* SERIES TABS */
+#series-tabs { display: flex; gap: 4px; padding: 10px 28px; background: #060606; border-bottom: 1px solid #1a1a1a; }
+.series-btn { background: transparent; color: #444; border: 1px solid #1a1a1a; border-radius: 4px; padding: 5px 18px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+.series-btn.peak.active { background: #3172D1; color: #fff; border-color: #3172D1; }
+.series-btn.heat.active { background: #F46B55; color: #fff; border-color: #F46B55; }
+
+/* VIEW TABS */
+#view-tabs { display: flex; gap: 4px; padding: 8px 28px; background: #080808; border-bottom: 1px solid #141414; }
+.view-btn { background: transparent; color: #555; border: none; padding: 4px 12px; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 3px; transition: all 0.15s; }
+.view-btn.active { background: #222; color: #ccc; }
+
+/* RACE TABS */
+#race-tabs { border-bottom: 1px solid #141414; padding: 8px 28px; display: none; align-items: center; gap: 8px; flex-wrap: wrap; background: #080808; min-height: 44px; }
+#race-tabs.visible { display: flex; }
+.race-tag { background: #1a1a1a; color: #888; border: 2px solid #2a2a2a; border-radius: 4px; padding: 4px 10px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+.race-tag.active { background: #e8ff47; color: #0a0a0a; border-color: #e8ff47; }
+.race-tag .remove { opacity: 0.5; font-weight: 400; font-size: 14px; line-height: 1; }
+.import-label { display: flex; align-items: center; gap: 6px; border: 2px dashed #2a2a2a; border-radius: 4px; padding: 4px 12px; cursor: pointer; color: #444; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; transition: all 0.15s; }
+.import-label:hover, .import-label.drag { border-color: #e8ff47; color: #e8ff47; }
+
+/* CONTENT */
+#content { padding: 24px 28px; }
+.section-header { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.section-title { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 0.06em; }
+.section-sub { font-size: 12px; color: #444; margin-left: 12px; }
+.empty-msg { color: #333; font-size: 14px; text-align: center; padding-top: 60px; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 8px 14px; color: #444; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 2px solid #1e1e1e; background: #0d0d0d; text-align: left; white-space: nowrap; }
+th.r { text-align: right; }
+td { padding: 10px 14px; font-size: 13px; color: #ccc; border-bottom: 1px solid #141414; white-space: nowrap; text-align: left; }
+td.r { text-align: right; }
+td.dim { color: #555; }
+td.accent { color: #e8ff47; font-weight: 700; }
+td.dash { color: #2a2a2a; }
+tr:nth-child(odd) { background: #0c0c0c; }
+tr:nth-child(even) { background: #0a0a0a; }
+.stage-btn { background: transparent; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; border-radius: 4px; padding: 4px 10px; transition: all 0.15s; border: 1px solid #2a2a2a; color: #666; }
+.stage-btn.has-data { border-color: #e8ff4755; color: #e8ff47aa; }
+
+/* MODALS */
+.overlay { display: none; position: fixed; inset: 0; background: #000000cc; z-index: 100; align-items: center; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 28px 32px; width: 440px; max-height: 90vh; overflow-y: auto; }
+.modal-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
+.modal-title span { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.08em; }
+.modal-title button { background: none; border: none; color: #555; font-size: 20px; cursor: pointer; }
+.modal-sub { font-size: 11px; color: #444; letter-spacing: 0.1em; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+.modal-save { flex: 1; background: #e8ff47; color: #0a0a0a; border: none; border-radius: 4px; padding: 10px; font-family: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; cursor: pointer; }
+.modal-cancel { background: transparent; color: #555; border: 1px solid #2a2a2a; border-radius: 4px; padding: 10px 16px; font-family: inherit; font-size: 12px; cursor: pointer; }
+.stage-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.stage-pos { width: 28px; text-align: right; font-size: 13px; font-weight: 700; color: #444; flex-shrink: 0; }
+.stage-pos.p1 { color: #e8ff47; }
+.stage-pts-lbl { font-size: 11px; color: #e8ff4788; width: 24px; flex-shrink: 0; }
+.stage-row select { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; color: #ccc; border-radius: 4px; padding: 6px 10px; font-family: inherit; font-size: 12px; cursor: pointer; }
+.series-select { display: flex; gap: 8px; margin-bottom: 16px; }
+.series-opt { flex: 1; background: #1a1a1a; border: 2px solid #2a2a2a; color: #666; border-radius: 4px; padding: 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; text-align: center; transition: all 0.15s; }
+.series-opt.selected.peak { background: #3172D122; border-color: #3172D1; color: #3172D1; }
+.series-opt.selected.heat { background: #F46B5522; border-color: #F46B55; color: #F46B55; }
+input[type=text], input[type=password] { width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; color: #ccc; border-radius: 4px; padding: 8px 12px; font-family: inherit; font-size: 13px; }
+.field-label { font-size: 11px; color: #444; letter-spacing: 0.1em; margin-bottom: 8px; }
+```
+
   </style>
 </head>
 <body>
 
 <!-- TOKEN MODAL -->
+
 <div class="overlay" id="token-overlay">
   <div class="modal">
-    <div class="modal-title"><span>◈ GITHUB TOKEN</span><button onclick="closeOverlay('token-overlay')">×</button></div>
+    <div class="modal-title"><span>GITHUB TOKEN</span><button onclick="closeOverlay('token-overlay')">×</button></div>
     <div class="modal-sub">STORED IN YOUR BROWSER ONLY — NEVER UPLOADED TO GITHUB</div>
-    <p style="font-size:12px;color:#555;margin-bottom:16px;line-height:1.6;">Generate a token at github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) with <strong style="color:#ccc">repo</strong> scope selected.</p>
-    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="margin-bottom:0" />
+    <p style="font-size:12px;color:#555;margin-bottom:16px;line-height:1.6;">Generate at github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) with <strong style="color:#ccc">repo</strong> scope.</p>
+    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
     <div class="modal-actions">
       <button class="modal-save" onclick="saveToken()">SAVE & CONNECT</button>
       <button class="modal-cancel" onclick="closeOverlay('token-overlay')">Cancel</button>
@@ -99,18 +107,19 @@
   </div>
 </div>
 
-<!-- IMPORT MODAL (series + name confirm) -->
+<!-- IMPORT MODAL -->
+
 <div class="overlay" id="import-overlay">
   <div class="modal">
-    <div class="modal-title"><span id="import-modal-title">IMPORT RACE</span><button onclick="closeOverlay('import-overlay')">×</button></div>
+    <div class="modal-title"><span>IMPORT RACE</span><button onclick="closeOverlay('import-overlay')">×</button></div>
     <div class="modal-sub">ASSIGN SERIES & CONFIRM RACE NAME</div>
-    <div style="font-size:11px;color:#444;letter-spacing:0.1em;margin-bottom:8px;">SERIES</div>
+    <div class="field-label">SERIES</div>
     <div class="series-select">
-      <div class="series-opt peak selected" id="opt-peak" onclick="selectSeries('peak')">◆ PEAK</div>
-      <div class="series-opt heat" id="opt-heat" onclick="selectSeries('heat')">◆ HEAT</div>
+      <div class="series-opt peak selected" id="opt-peak" onclick="selectSeries('peak')">PEAK</div>
+      <div class="series-opt heat" id="opt-heat" onclick="selectSeries('heat')">HEAT</div>
     </div>
-    <div style="font-size:11px;color:#444;letter-spacing:0.1em;margin-bottom:8px;">RACE NAME</div>
-    <input type="text" id="import-name-input" placeholder="e.g. Daytona International Speedway" />
+    <div class="field-label">RACE NAME</div>
+    <input type="text" id="import-name-input" placeholder="e.g. Daytona International Speedway" style="margin-bottom:0" />
     <div class="modal-actions">
       <button class="modal-save" onclick="confirmImport()">CONFIRM IMPORT</button>
       <button class="modal-cancel" onclick="closeOverlay('import-overlay')">Cancel</button>
@@ -119,6 +128,7 @@
 </div>
 
 <!-- STAGE MODAL -->
+
 <div class="overlay" id="stage-overlay">
   <div class="modal">
     <div class="modal-title"><span id="stage-modal-title">STAGE RESULTS</span><button onclick="closeOverlay('stage-overlay')">×</button></div>
@@ -132,27 +142,33 @@
 </div>
 
 <!-- HEADER -->
+
 <div id="header">
-  <div id="title">
-    <span class="icon">◈</span>
-    <span class="name">iROX ADMIN</span>
-    <span class="sub">POINTS MANAGER</span>
-  </div>
+  <div id="title">iROX ADMIN <span>POINTS MANAGER</span></div>
   <div id="header-right">
     <span id="save-status"></span>
-    <button class="hbtn" onclick="showTokenPrompt()">⚙ TOKEN</button>
-    <button class="hbtn primary" id="save-btn" onclick="doSave()" style="display:none">↑ SAVE TO GITHUB</button>
-    <a href="index.html" target="_blank" style="text-decoration:none"><button class="hbtn">↗ PUBLIC VIEW</button></a>
+    <button class="hbtn" onclick="showTokenPrompt()">TOKEN</button>
+    <button class="hbtn primary" id="save-btn" onclick="doSave()" style="display:none">SAVE TO GITHUB</button>
+    <a href="index.html" target="_blank" style="text-decoration:none"><button class="hbtn">PUBLIC VIEW</button></a>
   </div>
 </div>
 
 <!-- SERIES TABS -->
+
 <div id="series-tabs">
-  <button class="series-btn peak active" onclick="setSeries('peak')">◆ Peak</button>
-  <button class="series-btn heat" onclick="setSeries('heat')">◆ Heat</button>
+  <button class="series-btn peak active" onclick="setSeries('peak')">Peak</button>
+  <button class="series-btn heat" onclick="setSeries('heat')">Heat</button>
+</div>
+
+<!-- VIEW TABS -->
+
+<div id="view-tabs">
+  <button class="view-btn active" id="vbtn-standings" onclick="setView('standings')">Standings</button>
+  <button class="view-btn" id="vbtn-race" onclick="setView('race')">Race Results</button>
 </div>
 
 <!-- RACE TABS -->
+
 <div id="race-tabs">
   <label class="import-label" id="import-label"
     ondragover="event.preventDefault();this.classList.add('drag')"
@@ -163,13 +179,8 @@
   </label>
 </div>
 
-<!-- VIEW TABS -->
-<div id="view-tabs">
-  <button class="view-btn active" id="vbtn-standings" onclick="setView('standings')">Standings</button>
-  <button class="view-btn" id="vbtn-race" onclick="setView('race')">Race Results</button>
-</div>
-
 <!-- CONTENT -->
+
 <div id="content"><div class="empty-msg">Import a CSV to get started.</div></div>
 
 <script>
@@ -182,11 +193,10 @@ let races = [];
 let activeSeries = 'peak';
 let activeView = 'standings';
 let activeRaceId = null;
-let pendingCSV = null;   // holds parsed CSV waiting for series/name confirm
+let pendingCSV = null;
 let pendingImportSeries = 'peak';
 let stageModalRaceId = null;
 
-// ─── CSV PARSING ──────────────────────────────────────────────────────────────
 function splitCSVLine(line) {
   const vals = []; let cur = "", inQuote = false;
   for (const ch of line) {
@@ -243,7 +253,6 @@ function calculatePoints(rows, headers) {
   });
 }
 
-// ─── FILE HANDLING ────────────────────────────────────────────────────────────
 function handleDrop(e) { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) processCSVFile(f); }
 function handleCSVInput(e) { const f = e.target.files[0]; if (f) processCSVFile(f); e.target.value = ""; }
 
@@ -256,9 +265,7 @@ function processCSVFile(file) {
     const results = calculatePoints(parsed.rows, parsed.headers);
     if (results.error) { alert(results.error); return; }
     pendingCSV = { results, trackName: parsed.trackName };
-    // Pre-fill name and show import modal
     document.getElementById('import-name-input').value = parsed.trackName || '';
-    document.getElementById('import-modal-title').textContent = 'IMPORT RACE';
     selectSeries(activeSeries);
     openOverlay('import-overlay');
   };
@@ -286,7 +293,6 @@ function confirmImport() {
   setView('race');
 }
 
-// ─── STAGE MODAL ──────────────────────────────────────────────────────────────
 function openStageModal(raceId) {
   stageModalRaceId = raceId;
   const race = races.find(r => r.id === raceId);
@@ -327,11 +333,7 @@ function saveStageResults() {
   render();
 }
 
-// ─── GITHUB ───────────────────────────────────────────────────────────────────
-function showTokenPrompt() {
-  document.getElementById('token-input').value = CONFIG.token || '';
-  openOverlay('token-overlay');
-}
+function showTokenPrompt() { document.getElementById('token-input').value = CONFIG.token || ''; openOverlay('token-overlay'); }
 function saveToken() {
   const t = document.getElementById('token-input').value.trim();
   if (!t) return;
@@ -381,12 +383,10 @@ async function doSave() {
 function setStatus(cls, text) { const el = document.getElementById('save-status'); el.className = cls; el.textContent = text; }
 function markUnsaved() { document.getElementById('save-btn').style.display = 'inline-block'; setStatus('saving','● UNSAVED'); render(); }
 
-// ─── OVERLAYS ─────────────────────────────────────────────────────────────────
 function openOverlay(id) { document.getElementById(id).classList.add('open'); }
 function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
+document.addEventListener('click', e => { if (e.target.classList.contains('overlay')) e.target.classList.remove('open'); });
 
-// ─── VIEW ─────────────────────────────────────────────────────────────────────
 function setSeries(s) {
   activeSeries = s;
   document.querySelectorAll('.series-btn').forEach(b => b.classList.remove('active'));
@@ -394,6 +394,7 @@ function setSeries(s) {
   activeView = 'standings'; activeRaceId = null;
   document.getElementById('vbtn-standings').classList.add('active');
   document.getElementById('vbtn-race').classList.remove('active');
+  document.getElementById('race-tabs').classList.remove('visible');
   render();
 }
 
@@ -401,6 +402,7 @@ function setView(v) {
   activeView = v;
   document.getElementById('vbtn-standings').classList.toggle('active', v==='standings');
   document.getElementById('vbtn-race').classList.toggle('active', v==='race');
+  document.getElementById('race-tabs').classList.toggle('visible', v==='race');
   render();
 }
 
@@ -424,23 +426,18 @@ function buildStandings(raceSet) {
   })).sort((a,b) => b.total-a.total);
 }
 
-function posBadge(pos, rank) { const cls=rank===0?'pos-1':rank===1?'pos-2':rank===2?'pos-3':'pos-n'; return `<span class="pos-badge ${cls}">${pos}</span>`; }
-function dashOrVal(val, prefix='') { return val>0?`${prefix}${val}`:`<span class="dash">—</span>`; }
-
 function render() { renderRaceTabs(); if (activeView==='standings') renderStandings(); else renderRace(); }
 
 function renderRaceTabs() {
   const bar = document.getElementById('race-tabs');
   bar.querySelectorAll('.race-tag').forEach(el => el.remove());
   const importLabel = document.getElementById('import-label');
-  const sr = seriesRaces();
-  sr.forEach(race => {
-    const hasStage = race.stageResults && Object.values(race.stageResults).some(Boolean);
+  seriesRaces().forEach(race => {
     const tag = document.createElement('div');
     tag.className = `race-tag${activeRaceId===race.id && activeView==='race'?' active':''}`;
-    tag.innerHTML = `${race.name}${hasStage?`<span class="stg-badge">STG</span>`:''}<span class="remove" data-id="${race.id}">×</span>`;
+    tag.innerHTML = `${race.name}<span class="remove" data-id="${race.id}">×</span>`;
     tag.addEventListener('click', e => {
-      if (e.target.classList.contains('remove')) { removeRace(parseInt(e.target.dataset.id)); }
+      if (e.target.classList.contains('remove')) removeRace(parseInt(e.target.dataset.id));
       else { activeRaceId = race.id; setView('race'); }
     });
     bar.insertBefore(tag, importLabel);
@@ -450,7 +447,7 @@ function renderRaceTabs() {
 function renderStandings() {
   const sr = seriesRaces();
   const sorted = buildStandings(sr);
-  const seriesLabel = activeSeries==='peak' ? '◆ PEAK SERIES' : '◆ HEAT SERIES';
+  const seriesLabel = activeSeries==='peak' ? 'PEAK SERIES' : 'HEAT SERIES';
   let html = `<div class="section-header">
     <div><span class="section-title">${seriesLabel}</span><span class="section-sub">${sr.length} RACE${sr.length!==1?'S':''}</span></div>
   </div>`;
@@ -462,7 +459,7 @@ function renderStandings() {
   </tr></thead><tbody>`;
   sorted.forEach((d, i) => {
     html += `<tr>
-      <td>${posBadge(i+1,i)}</td>
+      <td class="dim">${i+1}</td>
       <td class="${i===0?'accent':''}">${d.name}</td>
       <td class="r ${i===0?'accent':''}">${d.total}</td>
       <td class="r dim">${i===0?'—':`-${leader-d.total}`}</td>
@@ -491,12 +488,12 @@ function renderRace() {
   </tr></thead><tbody>`;
   sorted.forEach((r, i) => {
     html += `<tr>
-      <td>${posBadge(r.finish,i)}</td>
+      <td class="dim">${r.finish}</td>
       <td class="${r.finish===1?'accent':''}">${r.name}</td>
       <td class="r dim">${r.basePoints}</td>
-      <td class="r">${dashOrVal(r.poleBonus,'+')}</td>
-      <td class="r">${dashOrVal(r.ledALapBonus,'+')}</td>
-      <td class="r">${dashOrVal(r.mostLapsLedBonus,'+')}</td>
+      <td class="r">${r.poleBonus>0?`+${r.poleBonus}`:`<span class="dash">—</span>`}</td>
+      <td class="r">${r.ledALapBonus>0?`+${r.ledALapBonus}`:`<span class="dash">—</span>`}</td>
+      <td class="r">${r.mostLapsLedBonus>0?`+${r.mostLapsLedBonus}`:`<span class="dash">—</span>`}</td>
       <td class="r">${r.stagePoints>0?`<span style="color:#e8ff47aa">+${r.stagePoints}</span>`:`<span class="dash">—</span>`}</td>
       <td class="r ${r.finish===1?'accent':''}">${r.total}</td>
     </tr>`;
@@ -507,11 +504,11 @@ function renderRace() {
 
 function removeRace(id) { races = races.filter(r=>r.id!==id); if(activeRaceId===id) activeRaceId=null; markUnsaved(); render(); }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   if (CONFIG.token) { setStatus('saving','● LOADING...'); loadData(); }
-  else { render(); }
+  else render();
 });
 </script>
+
 </body>
 </html>
