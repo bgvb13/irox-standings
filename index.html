@@ -50,6 +50,9 @@
 table { width: 100%; border-collapse: collapse; }
 th { padding: 8px 14px; color: #444; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 2px solid #1e1e1e; background: #0d0d0d; text-align: left; white-space: nowrap; }
 th.r { text-align: right; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: #888; }
+th.sort-active { color: #e8ff47 !important; }
 td { padding: 10px 14px; font-size: 13px; color: #ccc; border-bottom: 1px solid #141414; white-space: nowrap; text-align: left; }
 td.r { text-align: right; }
 td.dim { color: #555; }
@@ -104,6 +107,8 @@ let activeView = 'standings';
 let activeRaceId = null;
 let arrowIdx = 0;
 let dropPeak = false, dropHeat = false;
+let sortStandings = { col: 'total', dir: 'desc' };
+let sortRace = { col: 'finish', dir: 'asc' };
 
 function seriesRaces() {
   if (activeSeries === 'final') return races;
@@ -116,6 +121,7 @@ function setSeries(s) {
   document.querySelector(`.series-btn.${s}`).classList.add('active');
   activeView = 'standings';
   activeRaceId = null;
+  sortStandings = { col: 'total', dir: 'desc' };
   document.getElementById('vbtn-standings').classList.add('active');
   document.getElementById('vbtn-race').classList.remove('active');
   const isFinal = s === 'final';
@@ -128,6 +134,7 @@ function setSeries(s) {
 
 function setView(v) {
   activeView = v;
+  sortRace = { col: 'finish', dir: 'asc' };
   document.getElementById('vbtn-standings').classList.toggle('active', v === 'standings');
   document.getElementById('vbtn-race').classList.toggle('active', v === 'race');
   document.getElementById('race-tabs').classList.toggle('visible', v === 'race');
@@ -138,11 +145,15 @@ function setView(v) {
 function updateArrowNav() {
   const nav = document.getElementById('arrow-nav');
   const sr = seriesRaces();
-  if (activeView === 'standings' && activeSeries !== 'final' && sr.length > 0) {
+  if (activeView === 'standings' && sr.length > 0) {
     nav.classList.add('show');
     if (arrowIdx < 1) arrowIdx = 1;
     if (arrowIdx > sr.length) arrowIdx = sr.length;
-    document.getElementById('arrow-val').textContent = sr[arrowIdx - 1]?.name || `Race ${arrowIdx}`;
+    const race = sr[arrowIdx - 1];
+    const label = activeSeries === 'final' && race
+      ? `${race.name} [${race.series.toUpperCase()}]`
+      : race?.name || `Race ${arrowIdx}`;
+    document.getElementById('arrow-val').textContent = label;
     document.getElementById('arrow-prev').disabled = arrowIdx <= 1;
     document.getElementById('arrow-next').disabled = arrowIdx >= sr.length;
   } else {
@@ -157,15 +168,49 @@ function stepArrow(dir) {
   render();
 }
 
+function applySort(arr, col, dir) {
+  return [...arr].sort((a, b) => {
+    const av = a[col] ?? 0, bv = b[col] ?? 0;
+    if (typeof av === 'string') return dir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+    return dir === 'asc' ? av - bv : bv - av;
+  });
+}
+
+function setSortStandings(col) {
+  if (sortStandings.col === col) {
+    sortStandings.dir = sortStandings.dir === 'desc' ? 'asc' : 'desc';
+  } else {
+    sortStandings.col = col;
+    sortStandings.dir = col === 'races' ? 'asc' : 'desc';
+  }
+  render();
+}
+
+function setSortRace(col) {
+  if (sortRace.col === col) {
+    sortRace.dir = sortRace.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortRace.col = col;
+    sortRace.dir = col === 'finish' ? 'asc' : 'desc';
+  }
+  render();
+}
+
+function sortIndicator(activeCol, col, dir) {
+  return activeCol === col ? (dir === 'desc' ? ' ▼' : ' ▲') : '';
+}
+
 function buildStandings(raceSet, dropEnabled) {
   const driverMap = {};
   raceSet.forEach(race => {
     race.results.forEach(r => {
-      if (!driverMap[r.name]) driverMap[r.name] = { name: r.name, scores: [], wins: 0, poles: 0, stagePoints: 0 };
+      if (!driverMap[r.name]) driverMap[r.name] = { name: r.name, scores: [], wins: 0, poles: 0, stagePoints: 0, top5: 0, top10: 0 };
       driverMap[r.name].scores.push(r.total);
       driverMap[r.name].stagePoints += r.stagePoints || 0;
       if (r.finish === 1) driverMap[r.name].wins++;
       if (r.start === 1) driverMap[r.name].poles++;
+      if (r.finish <= 5) driverMap[r.name].top5++;
+      if (r.finish <= 10) driverMap[r.name].top10++;
     });
   });
   const maxRaces = raceSet.length;
@@ -178,7 +223,7 @@ function buildStandings(raceSet, dropEnabled) {
       dropped = scores[minIdx];
       scores = scores.filter((_, i) => i !== minIdx);
     }
-    return { name: d.name, total: scores.reduce((a,b)=>a+b,0), races: d.scores.length, wins: d.wins, poles: d.poles, stagePoints: d.stagePoints, dropped };
+    return { name: d.name, total: scores.reduce((a,b)=>a+b,0), races: d.scores.length, wins: d.wins, poles: d.poles, stagePoints: d.stagePoints, top5: d.top5, top10: d.top10, dropped };
   }).sort((a,b) => b.total - a.total);
 }
 
@@ -206,9 +251,12 @@ function renderStandings() {
   const sr = seriesRaces();
   const dropEnabled = activeSeries === 'peak' ? dropPeak : dropHeat;
   const raceSet = sr.slice(0, arrowIdx);
-  const sorted = buildStandings(raceSet, dropEnabled);
+  const byPoints = buildStandings(raceSet, dropEnabled);
   let prevSorted = null;
   if (raceSet.length > 1) prevSorted = buildStandings(raceSet.slice(0, raceSet.length - 1), dropEnabled);
+
+  const leader = byPoints.length > 0 ? byPoints[0].total : 0;
+  const sorted = applySort(byPoints, sortStandings.col, sortStandings.dir);
 
   const seriesLabel = activeSeries === 'peak' ? 'PEAK SERIES' : 'HEAT SERIES';
   let html = `<div class="section-header">
@@ -218,33 +266,45 @@ function renderStandings() {
 
   if (sorted.length === 0) { html += `<div class="empty-msg">No race data yet.</div>`; document.getElementById('content').innerHTML = html; return; }
 
-  const leader = sorted[0].total;
+  const si = sortStandings;
   html += `<div class="tbl-wrap"><table><thead><tr>
-    <th>Pos</th><th>Driver</th>
-    <th class="r">Points</th><th class="r">Gap</th><th class="r">Chg</th>
-    <th class="r">Stage</th><th class="r">Races</th><th class="r">Wins</th><th class="r">Poles</th>
+    <th class="sortable${si.col==='total'?' sort-active':''}" onclick="setSortStandings('total')">Pos${sortIndicator(si.col,'total',si.dir)}</th>
+    <th class="sortable${si.col==='name'?' sort-active':''}" onclick="setSortStandings('name')">Driver${sortIndicator(si.col,'name',si.dir)}</th>
+    <th class="r sortable${si.col==='total'?' sort-active':''}" onclick="setSortStandings('total')">Points${sortIndicator(si.col,'total',si.dir)}</th>
+    <th class="r">Gap</th>
+    <th class="r">Chg</th>
+    <th class="r sortable${si.col==='stagePoints'?' sort-active':''}" onclick="setSortStandings('stagePoints')">Stage${sortIndicator(si.col,'stagePoints',si.dir)}</th>
+    <th class="r sortable${si.col==='races'?' sort-active':''}" onclick="setSortStandings('races')">Races${sortIndicator(si.col,'races',si.dir)}</th>
+    <th class="r sortable${si.col==='wins'?' sort-active':''}" onclick="setSortStandings('wins')">Wins${sortIndicator(si.col,'wins',si.dir)}</th>
+    <th class="r sortable${si.col==='poles'?' sort-active':''}" onclick="setSortStandings('poles')">Poles${sortIndicator(si.col,'poles',si.dir)}</th>
+    <th class="r sortable${si.col==='top5'?' sort-active':''}" onclick="setSortStandings('top5')">T5${sortIndicator(si.col,'top5',si.dir)}</th>
+    <th class="r sortable${si.col==='top10'?' sort-active':''}" onclick="setSortStandings('top10')">T10${sortIndicator(si.col,'top10',si.dir)}</th>
     ${dropEnabled ? '<th class="r">Dropped</th>' : ''}
   </tr></thead><tbody>`;
 
   sorted.forEach((d, i) => {
-    const gap = i === 0 ? '—' : `-${leader - d.total}`;
+    const gap = d.total === leader ? '—' : `-${leader - d.total}`;
     let chg = `<span class="chg-nc">—</span>`;
     if (prevSorted) {
       const prev = prevSorted.findIndex(p => p.name === d.name);
+      const cur = byPoints.findIndex(p => p.name === d.name);
       if (prev === -1) chg = `<span class="chg-up">NEW</span>`;
-      else if (prev > i) chg = `<span class="chg-up">▲${prev - i}</span>`;
-      else if (prev < i) chg = `<span class="chg-dn">▼${i - prev}</span>`;
+      else if (prev > cur) chg = `<span class="chg-up">▲${prev - cur}</span>`;
+      else if (prev < cur) chg = `<span class="chg-dn">▼${cur - prev}</span>`;
     }
+    const isLeader = d.total === leader;
     html += `<tr>
       <td class="dim">${i + 1}</td>
-      <td class="${i===0?'accent':''}">${d.name}</td>
-      <td class="r ${i===0?'accent':''}">${d.total}</td>
+      <td class="${isLeader?'accent':''}">${d.name}</td>
+      <td class="r ${isLeader?'accent':''}">${d.total}</td>
       <td class="r dim">${gap}</td>
       <td class="r">${chg}</td>
       <td class="r dim">${d.stagePoints > 0 ? d.stagePoints : '—'}</td>
       <td class="r dim">${d.races}</td>
       <td class="r">${d.wins}</td>
       <td class="r dim">${d.poles}</td>
+      <td class="r dim">${d.top5}</td>
+      <td class="r dim">${d.top10}</td>
       ${dropEnabled ? `<td class="r dropped-val">${d.dropped !== null ? d.dropped : '—'}</td>` : ''}
     </tr>`;
   });
@@ -253,32 +313,56 @@ function renderStandings() {
 }
 
 function renderFinal() {
-  const peakRaces = races.filter(r => r.series === 'peak');
-  const heatRaces = races.filter(r => r.series === 'heat');
+  const allRaces = races.slice(0, arrowIdx);
+  const peakRaces = allRaces.filter(r => r.series === 'peak');
+  const heatRaces = allRaces.filter(r => r.series === 'heat');
   const peakStnd = buildStandings(peakRaces, dropPeak);
   const heatStnd = buildStandings(heatRaces, dropHeat);
   const names = [...new Set([...peakStnd.map(d=>d.name), ...heatStnd.map(d=>d.name)])];
-  const combined = names.map(name => {
+  const byPoints = names.map(name => {
     const p = peakStnd.find(d=>d.name===name);
     const h = heatStnd.find(d=>d.name===name);
-    return { name, total: (p?.total||0)+(h?.total||0), wins: (p?.wins||0)+(h?.wins||0), poles: (p?.poles||0)+(h?.poles||0) };
+    return {
+      name,
+      total: (p?.total||0) + (h?.total||0),
+      wins: (p?.wins||0) + (h?.wins||0),
+      poles: (p?.poles||0) + (h?.poles||0),
+      top5: (p?.top5||0) + (h?.top5||0),
+      top10: (p?.top10||0) + (h?.top10||0)
+    };
   }).sort((a,b) => b.total - a.total);
 
-  if (combined.length === 0) { document.getElementById('content').innerHTML = `<div class="empty-msg">No race data yet.</div>`; return; }
-  const leader = combined[0].total;
-  let html = `<div class="section-header"><div><span class="section-title">FINAL CHAMPIONSHIP</span><span class="section-sub">${races.length} TOTAL RACES</span></div></div>
+  if (byPoints.length === 0) { document.getElementById('content').innerHTML = `<div class="empty-msg">No race data yet.</div>`; return; }
+  const leader = byPoints[0].total;
+  const sorted = applySort(byPoints, sortStandings.col, sortStandings.dir);
+
+  const peakCount = peakRaces.length, heatCount = heatRaces.length;
+  const subLabel = peakCount + heatCount === 0 ? '0 RACES'
+    : [peakCount ? `${peakCount} PEAK` : '', heatCount ? `${heatCount} HEAT` : ''].filter(Boolean).join(' + ') + ` RACE${peakCount+heatCount!==1?'S':''}`;
+
+  const si = sortStandings;
+  let html = `<div class="section-header"><div><span class="section-title">FINAL CHAMPIONSHIP</span><span class="section-sub">${subLabel}</span></div></div>
   <div class="tbl-wrap"><table><thead><tr>
-    <th>Pos</th><th>Driver</th><th class="r">Points</th><th class="r">Gap</th>
-    <th class="r">Wins</th><th class="r">Poles</th>
+    <th class="sortable${si.col==='total'?' sort-active':''}" onclick="setSortStandings('total')">Pos${sortIndicator(si.col,'total',si.dir)}</th>
+    <th class="sortable${si.col==='name'?' sort-active':''}" onclick="setSortStandings('name')">Driver${sortIndicator(si.col,'name',si.dir)}</th>
+    <th class="r sortable${si.col==='total'?' sort-active':''}" onclick="setSortStandings('total')">Points${sortIndicator(si.col,'total',si.dir)}</th>
+    <th class="r">Gap</th>
+    <th class="r sortable${si.col==='wins'?' sort-active':''}" onclick="setSortStandings('wins')">Wins${sortIndicator(si.col,'wins',si.dir)}</th>
+    <th class="r sortable${si.col==='poles'?' sort-active':''}" onclick="setSortStandings('poles')">Poles${sortIndicator(si.col,'poles',si.dir)}</th>
+    <th class="r sortable${si.col==='top5'?' sort-active':''}" onclick="setSortStandings('top5')">T5${sortIndicator(si.col,'top5',si.dir)}</th>
+    <th class="r sortable${si.col==='top10'?' sort-active':''}" onclick="setSortStandings('top10')">T10${sortIndicator(si.col,'top10',si.dir)}</th>
   </tr></thead><tbody>`;
-  combined.forEach((d, i) => {
+  sorted.forEach((d, i) => {
+    const isLeader = d.total === leader;
     html += `<tr>
       <td class="dim">${i + 1}</td>
-      <td class="${i===0?'accent':''}">${d.name}</td>
-      <td class="r ${i===0?'accent':''}">${d.total}</td>
-      <td class="r dim">${i===0?'—':`-${leader-d.total}`}</td>
+      <td class="${isLeader?'accent':''}">${d.name}</td>
+      <td class="r ${isLeader?'accent':''}">${d.total}</td>
+      <td class="r dim">${isLeader?'—':`-${leader-d.total}`}</td>
       <td class="r">${d.wins}</td>
       <td class="r dim">${d.poles}</td>
+      <td class="r dim">${d.top5}</td>
+      <td class="r dim">${d.top10}</td>
     </tr>`;
   });
   html += `</tbody></table></div>`;
@@ -288,16 +372,21 @@ function renderFinal() {
 function renderRace() {
   const race = races.find(r => r.id === activeRaceId);
   if (!race) { document.getElementById('content').innerHTML = `<div class="empty-msg">Select a race to view results.</div>`; return; }
-  const sorted = [...race.results].sort((a,b) => a.finish - b.finish);
+  const sorted = applySort([...race.results], sortRace.col, sortRace.dir);
+  const sr = sortRace;
   let html = `<div class="section-header"><div>
     <span class="section-title">${race.name.toUpperCase()}</span>
     <span class="section-sub">${race.results.length} DRIVERS</span>
   </div></div>
   <div class="tbl-wrap"><table><thead><tr>
-    <th>Finish</th><th>Driver</th>
-    <th class="r">Base</th><th class="r">Pole</th>
-    <th class="r">Led Lap</th><th class="r">Most Led</th>
-    <th class="r">Stage</th><th class="r">Total</th>
+    <th class="sortable${sr.col==='finish'?' sort-active':''}" onclick="setSortRace('finish')">Finish${sortIndicator(sr.col,'finish',sr.dir)}</th>
+    <th>Driver</th>
+    <th class="r sortable${sr.col==='basePoints'?' sort-active':''}" onclick="setSortRace('basePoints')">Points${sortIndicator(sr.col,'basePoints',sr.dir)}</th>
+    <th class="r">Pole</th>
+    <th class="r">Led Lap</th>
+    <th class="r">Most Led</th>
+    <th class="r">Stage</th>
+    <th class="r sortable${sr.col==='total'?' sort-active':''}" onclick="setSortRace('total')">Total${sortIndicator(sr.col,'total',sr.dir)}</th>
   </tr></thead><tbody>`;
   sorted.forEach((r, i) => {
     html += `<tr>
