@@ -42,6 +42,9 @@
 .arrow-btn:disabled { opacity: 0.2; cursor: default; }
 #arrow-label { font-size: 12px; color: #555; letter-spacing: 0.08em; }
 #arrow-label span { color: #e8ff47; font-weight: 700; }
+#race-select { background: #111; border: 1px solid #2a2a2a; color: #e8ff47; border-radius: 4px; padding: 4px 8px; font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; outline: none; }
+#race-select:hover { border-color: #444; }
+#race-select option { background: #111; color: #ccc; }
 
 /* CONTENT */
 #content { padding: 24px 28px; }
@@ -81,6 +84,7 @@ tr:nth-child(even) { background: #0a0a0a; }
   .race-tag { font-size: 11px; padding: 3px 8px; }
   #arrow-nav { padding: 8px 12px; gap: 8px; }
   #arrow-label { font-size: 10px; }
+  #race-select { font-size: 10px; padding: 3px 6px; }
   #content { padding: 14px 12px; }
   .section-title { font-size: 14px; }
   th { padding: 6px 8px; font-size: 9px; }
@@ -112,7 +116,7 @@ tr:nth-child(even) { background: #0a0a0a; }
 
 <div id="arrow-nav">
   <button class="arrow-btn" id="arrow-prev" onclick="stepArrow(-1)">←</button>
-  <div id="arrow-label">STANDINGS AFTER: <span id="arrow-val">—</span></div>
+  <select id="race-select" onchange="selectRace(this.value)"></select>
   <button class="arrow-btn" id="arrow-next" onclick="stepArrow(1)">→</button>
 </div>
 
@@ -171,11 +175,14 @@ function updateArrowNav() {
     nav.classList.add('show');
     if (arrowIdx < 1) arrowIdx = 1;
     if (arrowIdx > sr.length) arrowIdx = sr.length;
-    const race = sr[arrowIdx - 1];
-    const label = activeSeries === 'final' && race
-      ? `${race.name} [${race.series.toUpperCase()}]`
-      : race?.name || `Race ${arrowIdx}`;
-    document.getElementById('arrow-val').textContent = label;
+    const sel = document.getElementById('race-select');
+    sel.innerHTML = sr.map((race, i) => {
+      const label = activeSeries === 'final'
+        ? `${race.name} [${race.series.toUpperCase()}]`
+        : race.name || `Race ${i + 1}`;
+      return `<option value="${i + 1}">${label}</option>`;
+    }).join('');
+    sel.value = arrowIdx;
     document.getElementById('arrow-prev').disabled = arrowIdx <= 1;
     document.getElementById('arrow-next').disabled = arrowIdx >= sr.length;
   } else {
@@ -186,6 +193,12 @@ function updateArrowNav() {
 function stepArrow(dir) {
   const sr = seriesRaces();
   arrowIdx = Math.max(1, Math.min(sr.length, arrowIdx + dir));
+  updateArrowNav();
+  render();
+}
+
+function selectRace(val) {
+  arrowIdx = parseInt(val, 10);
   updateArrowNav();
   render();
 }
