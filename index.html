@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2026 iROX Alternative Points Standings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0a0a0a; color: #ccc; font-family: 'Barlow Condensed','Arial Narrow',Arial,sans-serif; min-height: 100vh; }
@@ -341,7 +344,13 @@ function renderFinal() {
     : [peakCount ? `${peakCount} PEAK` : '', heatCount ? `${heatCount} HEAT` : ''].filter(Boolean).join(' + ') + ` RACE${peakCount+heatCount!==1?'S':''}`;
 
   const si = sortStandings;
-  let html = `<div class="section-header"><div><span class="section-title">FINAL CHAMPIONSHIP</span><span class="section-sub">${subLabel}</span></div></div>
+  let html = `<div class="section-header">
+    <div><span class="section-title">FINAL CHAMPIONSHIP</span><span class="section-sub">${subLabel}</span></div>
+    <div style="display:flex;gap:6px;">
+      <button class="drop-toggle ${dropPeak?'on':''}" onclick="toggleDropSeries('peak')">PEAK DROP: ${dropPeak?'ON':'OFF'}</button>
+      <button class="drop-toggle ${dropHeat?'on':''}" onclick="toggleDropSeries('heat')">HEAT DROP: ${dropHeat?'ON':'OFF'}</button>
+    </div>
+  </div>
   <div class="tbl-wrap"><table><thead><tr>
     <th class="sortable${si.col==='total'?' sort-active':''}" onclick="setSortStandings('total')">Pos${sortIndicator(si.col,'total',si.dir)}</th>
     <th class="sortable${si.col==='name'?' sort-active':''}" onclick="setSortStandings('name')">Driver${sortIndicator(si.col,'name',si.dir)}</th>
@@ -407,6 +416,12 @@ function renderRace() {
 function toggleDrop() {
   if (activeSeries === 'peak') dropPeak = !dropPeak;
   else dropHeat = !dropHeat;
+  render();
+}
+
+function toggleDropSeries(series) {
+  if (series === 'peak') dropPeak = !dropPeak;
+  else if (series === 'heat') dropHeat = !dropHeat;
   render();
 }
 
