@@ -288,6 +288,7 @@ function render() {
 function renderRaceTabs() {
   const bar = document.getElementById('race-tabs');
   bar.innerHTML = '';
+  if (activeSeries === 'final') { bar.classList.remove('visible'); return; }
   const sr = seriesRaces();
   sr.forEach(race => {
     const tag = document.createElement('div');
