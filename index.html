@@ -37,7 +37,7 @@
 /* ARROW NAV */
 #arrow-nav { padding: 12px 28px 8px; border-bottom: 1px solid #141414; background: #080808; display: none; align-items: center; justify-content: center; gap: 14px; }
 #arrow-nav.show { display: flex; }
-.arrow-btn { background: transparent; border: 1px solid #2a2a2a; color: #666; border-radius: 4px; padding: 4px 12px; font-family: inherit; font-size: 24px; cursor: pointer; transition: all 0.15s; line-height: 1; }
+.arrow-btn { background: transparent; border: 1px solid #2a2a2a; color: #666; border-radius: 4px; padding: 4px 8px; font-family: inherit; font-size: 24px; cursor: pointer; transition: all 0.15s; line-height: 1; }
 .arrow-btn:hover:not(:disabled) { border-color: #444; color: #ccc; }
 .arrow-btn:disabled { opacity: 0.2; cursor: default; }
 #arrow-label { font-size: 12px; color: #555; letter-spacing: 0.08em; }
@@ -76,20 +76,21 @@ tr:nth-child(even) { background: #0a0a0a; }
 
 @media (max-width: 480px) {
   #header { padding: 0 12px; height: 48px; }
-  #title { font-size: 13px; }
+  #title { font-size: 22px; }
   #series-tabs { padding: 8px 12px; gap: 3px; }
-  .series-btn { padding: 4px 10px; font-size: 11px; }
+  .series-btn { padding: 4px 10px; font-size: 15px; }
   #view-tabs { padding: 6px 12px; }
-  .view-btn { padding: 4px 8px; font-size: 10px; }
+  .view-btn { padding: 4px 8px; font-size: 13px; }
   #race-tabs { padding: 6px 12px; gap: 6px; }
-  .race-tag { font-size: 11px; padding: 3px 8px; }
+  .race-tag { font-size: 13px; padding: 3px 8px; }
   #arrow-nav { padding: 8px 12px; gap: 8px; }
+  .arrow-btn { font-size: 14px; padding: 3px 6px; }
   #arrow-label { font-size: 10px; }
-  #race-select { font-size: 10px; padding: 3px 6px; }
+  #race-select { font-size: 14px; padding: 3px 6px; }
   #content { padding: 14px 12px; }
   .section-title { font-size: 14px; }
-  th { padding: 6px 8px; font-size: 10px; }
-  td { padding: 8px 8px; font-size: 12px; }
+  th { padding: 6px 8px; font-size: 12px; }
+  td { padding: 8px 8px; font-size: 13px; }
   td.dropped-val { font-size: 10px; }
   .drop-toggle { font-size: 10px; padding: 3px 8px; }
 }
