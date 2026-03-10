@@ -628,8 +628,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 51
+          "stagePoints": 9,
+          "total": 60
         },
         {
           "name": "Mathew Thunhorst",
@@ -640,8 +640,8 @@
           "poleBonus": 1,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 2,
-          "stagePoints": 0,
-          "total": 44
+          "stagePoints": 10,
+          "total": 54
         },
         {
           "name": "Thomas Bressi III",
@@ -652,8 +652,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 36
+          "stagePoints": 8,
+          "total": 44
         },
         {
           "name": "Raleigh Grant Davis",
@@ -664,8 +664,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 32
+          "stagePoints": 3,
+          "total": 35
         },
         {
           "name": "Blake Gordon",
@@ -676,8 +676,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 31
+          "stagePoints": 7,
+          "total": 38
         },
         {
           "name": "Shawn Carmody2",
@@ -688,8 +688,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 28
+          "stagePoints": 6,
+          "total": 34
         },
         {
           "name": "Rob Ackley",
@@ -700,8 +700,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 26
+          "stagePoints": 4,
+          "total": 30
         },
         {
           "name": "Tyler Hensley4",
@@ -712,8 +712,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 24
+          "stagePoints": 2,
+          "total": 26
         },
         {
           "name": "Justin Morton",
@@ -724,8 +724,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 22
+          "stagePoints": 5,
+          "total": 27
         },
         {
           "name": "Hayden Pastorius",
@@ -736,8 +736,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 20
+          "stagePoints": 1,
+          "total": 21
         },
         {
           "name": "Joe Dinsmore",
@@ -884,8 +884,19 @@
           "total": 10
         }
       ],
-      "stageResults": {}
+      "stageResults": {
+        "1": "Mathew Thunhorst",
+        "2": "Michael Laraia",
+        "3": "Thomas Bressi III",
+        "4": "Blake Gordon",
+        "5": "Shawn Carmody2",
+        "6": "Justin Morton",
+        "7": "Rob Ackley",
+        "8": "Raleigh Grant Davis",
+        "9": "Tyler Hensley4",
+        "10": "Hayden Pastorius"
+      }
     }
   ],
-  "savedAt": "2026-03-10T02:11:20.443Z"
+  "savedAt": "2026-03-10T02:14:32.123Z"
 }
