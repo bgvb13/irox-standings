@@ -255,7 +255,13 @@ function buildStandings(raceSet, dropEnabled, provEnabled = false) {
     });
   });
   const maxRaces = raceSet.length;
-  Object.values(driverMap).forEach(d => { while (d.scores.length < maxRaces) d.scores.push(provEnabled ? 5 : 0); });
+  Object.values(driverMap).forEach(d => {
+    let provisionalUsed = false;
+    while (d.scores.length < maxRaces) {
+      if (provEnabled && !provisionalUsed) { d.scores.push(5); provisionalUsed = true; }
+      else d.scores.push(0);
+    }
+  });
   const result = Object.values(driverMap).map(d => {
     let scores = [...d.scores];
     let dropped = null;
