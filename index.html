@@ -135,6 +135,7 @@ let activeView = 'standings';
 let activeRaceId = null;
 let arrowIdx = 0;
 let dropPeak = false, dropHeat = false;
+let provPeak = false, provHeat = false;
 let sortStandings = { col: 'total', dir: 'desc' };
 let sortRace = { col: 'finish', dir: 'asc' };
 
@@ -237,7 +238,7 @@ function sortIndicator(activeCol, col, dir) {
   return activeCol === col ? (dir === 'desc' ? ' ▼' : ' ▲') : '';
 }
 
-function buildStandings(raceSet, dropEnabled) {
+function buildStandings(raceSet, dropEnabled, provEnabled = false) {
   const driverMap = {};
   raceSet.forEach(race => {
     race.results.forEach(r => {
@@ -254,7 +255,7 @@ function buildStandings(raceSet, dropEnabled) {
     });
   });
   const maxRaces = raceSet.length;
-  Object.values(driverMap).forEach(d => { while (d.scores.length < maxRaces) d.scores.push(0); });
+  Object.values(driverMap).forEach(d => { while (d.scores.length < maxRaces) d.scores.push(provEnabled ? 5 : 0); });
   const result = Object.values(driverMap).map(d => {
     let scores = [...d.scores];
     let dropped = null;
@@ -303,10 +304,11 @@ function renderRaceTabs() {
 function renderStandings() {
   const sr = seriesRaces();
   const dropEnabled = activeSeries === 'peak' ? dropPeak : dropHeat;
+  const provEnabled = activeSeries === 'peak' ? provPeak : provHeat;
   const raceSet = sr.slice(0, arrowIdx);
-  const byPoints = buildStandings(raceSet, dropEnabled);
+  const byPoints = buildStandings(raceSet, dropEnabled, provEnabled);
   let prevSorted = null;
-  if (raceSet.length > 1) prevSorted = buildStandings(raceSet.slice(0, raceSet.length - 1), dropEnabled);
+  if (raceSet.length > 1) prevSorted = buildStandings(raceSet.slice(0, raceSet.length - 1), dropEnabled, provEnabled);
 
   const leader = byPoints.length > 0 ? byPoints[0].total : 0;
   const sorted = applySort(byPoints, sortStandings.col, sortStandings.dir);
@@ -314,7 +316,10 @@ function renderStandings() {
   const seriesLabel = activeSeries === 'peak' ? 'PEAK SERIES' : 'HEAT SERIES';
   let html = `<div class="section-header">
     <div><span class="section-title">${seriesLabel}</span><span class="section-sub">RACE ${raceSet.length} OF ${sr.length}</span></div>
-    <button class="drop-toggle ${dropEnabled?'on':''}" onclick="toggleDrop()">DROP WEEK: ${dropEnabled?'ON':'OFF'}</button>
+    <div style="display:flex;gap:6px;">
+      <button class="drop-toggle ${dropEnabled?'on':''}" onclick="toggleDrop()">DROP WEEK: ${dropEnabled?'ON':'OFF'}</button>
+      <button class="drop-toggle ${provEnabled?'on':''}" onclick="toggleProv()">PROVISIONAL: ${provEnabled?'ON':'OFF'}</button>
+    </div>
   </div>`;
 
   if (sorted.length === 0) { html += `<div class="empty-msg">No race data yet.</div>`; document.getElementById('content').innerHTML = html; return; }
@@ -366,8 +371,8 @@ function renderStandings() {
 }
 
 function buildFinalCombined(allRaces) {
-  const peakStnd = buildStandings(allRaces.filter(r => r.series === 'peak'), dropPeak);
-  const heatStnd = buildStandings(allRaces.filter(r => r.series === 'heat'), dropHeat);
+  const peakStnd = buildStandings(allRaces.filter(r => r.series === 'peak'), dropPeak, provPeak);
+  const heatStnd = buildStandings(allRaces.filter(r => r.series === 'heat'), dropHeat, provHeat);
   const names = [...new Set([...peakStnd.map(d=>d.name), ...heatStnd.map(d=>d.name)])];
   const result = names.map(name => {
     const p = peakStnd.find(d=>d.name===name);
@@ -420,6 +425,8 @@ function renderFinal() {
     <div style="display:flex;gap:6px;">
       <button class="drop-toggle ${dropPeak?'on':''}" onclick="toggleDropSeries('peak')">PEAK DROP: ${dropPeak?'ON':'OFF'}</button>
       <button class="drop-toggle ${dropHeat?'on':''}" onclick="toggleDropSeries('heat')">HEAT DROP: ${dropHeat?'ON':'OFF'}</button>
+      <button class="drop-toggle ${provPeak?'on':''}" onclick="toggleProvSeries('peak')">PEAK PROV: ${provPeak?'ON':'OFF'}</button>
+      <button class="drop-toggle ${provHeat?'on':''}" onclick="toggleProvSeries('heat')">HEAT PROV: ${provHeat?'ON':'OFF'}</button>
     </div>
   </div>
   <div class="tbl-wrap"><table><thead><tr>
@@ -507,6 +514,18 @@ function toggleDrop() {
 function toggleDropSeries(series) {
   if (series === 'peak') dropPeak = !dropPeak;
   else if (series === 'heat') dropHeat = !dropHeat;
+  render();
+}
+
+function toggleProv() {
+  if (activeSeries === 'peak') provPeak = !provPeak;
+  else provHeat = !provHeat;
+  render();
+}
+
+function toggleProvSeries(series) {
+  if (series === 'peak') provPeak = !provPeak;
+  else if (series === 'heat') provHeat = !provHeat;
   render();
 }
 
