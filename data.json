@@ -1182,8 +1182,8 @@
           "poleBonus": 1,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 2,
-          "stagePoints": 0,
-          "total": 54
+          "stagePoints": 10,
+          "total": 64
         },
         {
           "name": "Thomas Bressi III",
@@ -1194,8 +1194,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 41
+          "stagePoints": 8,
+          "total": 49
         },
         {
           "name": "Mathew Thunhorst",
@@ -1206,8 +1206,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 35
+          "stagePoints": 7,
+          "total": 42
         },
         {
           "name": "Justin Morton",
@@ -1242,8 +1242,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 28
+          "stagePoints": 6,
+          "total": 34
         },
         {
           "name": "Chad Mikosz",
@@ -1254,8 +1254,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 26
+          "stagePoints": 5,
+          "total": 31
         },
         {
           "name": "Shawn Carmody2",
@@ -1302,8 +1302,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 20
+          "stagePoints": 9,
+          "total": 29
         },
         {
           "name": "Kyle Cooper5",
@@ -1314,8 +1314,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 18
+          "stagePoints": 4,
+          "total": 22
         },
         {
           "name": "Adam S Wood",
@@ -1326,8 +1326,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 17
+          "stagePoints": 3,
+          "total": 20
         },
         {
           "name": "Woody Mahan",
@@ -1338,8 +1338,8 @@
           "poleBonus": 0,
           "ledALapBonus": 1,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 17
+          "stagePoints": 2,
+          "total": 19
         },
         {
           "name": "Riley Thompson",
@@ -1362,8 +1362,8 @@
           "poleBonus": 0,
           "ledALapBonus": 0,
           "mostLapsLedBonus": 0,
-          "stagePoints": 0,
-          "total": 14
+          "stagePoints": 1,
+          "total": 15
         },
         {
           "name": "Boomer Logan",
@@ -1438,8 +1438,19 @@
           "total": 10
         }
       ],
-      "stageResults": {}
+      "stageResults": {
+        "1": "Michael Laraia",
+        "2": "Raleigh Grant Davis",
+        "3": "Thomas Bressi III",
+        "4": "Mathew Thunhorst",
+        "5": "Rob Ackley",
+        "6": "Chad Mikosz",
+        "7": "Kyle Cooper5",
+        "8": "Adam S Wood",
+        "9": "Woody Mahan",
+        "10": "Ed Sprenger"
+      }
     }
   ],
-  "savedAt": "2026-03-24T02:28:00.341Z"
+  "savedAt": "2026-03-24T02:48:12.604Z"
 }
